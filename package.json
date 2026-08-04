@@ -1,0 +1,33 @@
+{
+  "name": "dashboard-capsule-ai-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dashboard Capsule AI — Enterprise Monorepo Platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/notification-service"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "db:migrate": "npm --prefix packages/database run db:migrate",
+    "db:seed": "npm --prefix packages/database run db:seed",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.2.0",
+    "turbo": "^1.12.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

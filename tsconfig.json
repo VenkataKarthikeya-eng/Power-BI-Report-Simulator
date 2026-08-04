@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [],
+  "references": [
+    { "path": "./packages/types" },
+    { "path": "./packages/config" },
+    { "path": "./packages/logger" },
+    { "path": "./packages/utils" },
+    { "path": "./packages/database" },
+    { "path": "./packages/ui" },
+    { "path": "./apps/landing-web" },
+    { "path": "./apps/app-dashboard" },
+    { "path": "./apps/admin-portal" },
+    { "path": "./apps/viewer" }
+  ]
+}

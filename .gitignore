@@ -1,0 +1,81 @@
+# Node dependencies
+node_modules/
+.pnpm-store/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Next.js & Web build output
+.next/
+out/
+build/
+dist/
+
+# Python virtual environments & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+.pytest_cache/
+.coverage
+
+# Go build artifacts
+*.exe
+*.exe?
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+bin/
+
+# Docker temporary files
+.docker/
+*.tar
+docker-compose.override.yml
+
+# Environment files & Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.pfx
+secrets/
+secrets.json
+secrets.yaml
+
+# Local databases & storage
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.mdb
+*.ldf
+*.mdf
+postgres_data/
+data/
+db_data/
+
+# IDE & OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Prisma & Database
+packages/database/prisma/migrations/*_sqlite/
+
+# Logs & Temporary files
+*.log
+logs/
+tmp/
+coverage/
+.turbo/

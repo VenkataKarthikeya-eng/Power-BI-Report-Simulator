@@ -1,0 +1,288 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum PlanTier {
+  STARTER
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ORG_ADMIN
+  DEVELOPER
+  BUSINESS_ANALYST
+  VIEWER
+  HR
+  GUEST
+  EXTERNAL_USER
+}
+
+enum UserStatus {
+  UNVERIFIED
+  ACTIVE
+  SUSPENDED
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
+}
+
+model Organization {
+  id               String                 @id @default(uuid()) @db.Uuid
+  name             String
+  slug             String                 @unique
+  planTier         PlanTier               @default(ENTERPRISE)
+  maxUsers         Int                    @default(50)
+  maxStorageGb     Int                    @default(500)
+  securityPolicy   Json                   @default("{\"mfa_required\": false, \"sso_only\": false}")
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+  users            User[]
+  workspaces       Workspace[]
+  invitations      OrganizationInvitation[]
+
+  @@map("organizations")
+}
+
+model User {
+  id                    String                 @id @default(uuid()) @db.Uuid
+  organizationId        String                 @db.Uuid
+  organization          Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email                 String                 @unique
+  passwordHash          String
+  fullName              String
+  systemRole            UserRole               @default(DEVELOPER)
+  status                UserStatus             @default(UNVERIFIED)
+  isMfaEnabled          Boolean                @default(false)
+  mfaSecret             String?
+  lastLoginAt           DateTime?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  workspaces            WorkspaceMembership[]
+  dashboards            Dashboard[]
+  versions              DashboardVersion[]
+  sharedLinks           SharedLink[]
+  sessions              Session[]
+  refreshTokens         RefreshToken[]
+  emailVerifications    EmailVerificationToken[]
+  passwordResets        PasswordResetToken[]
+  sentInvitations       OrganizationInvitation[] @relation("InvitedBy")
+  auditLogs             AuditLog[]
+
+  @@index([organizationId, email])
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @db.Uuid
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token        String   @unique
+  ipAddress    String?
+  userAgent    String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model RefreshToken {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @db.Uuid
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash   String   @unique
+  familyId    String   @default(uuid())
+  isRevoked   Boolean  @default(false)
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([userId, familyId])
+  @@map("refresh_tokens")
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@map("email_verification_tokens")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  isUsed    Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@map("password_reset_tokens")
+}
+
+model OrganizationInvitation {
+  id             String           @id @default(uuid()) @db.Uuid
+  organizationId String           @db.Uuid
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           UserRole         @default(DEVELOPER)
+  token          String           @unique
+  status         InvitationStatus @default(PENDING)
+  invitedById    String           @db.Uuid
+  invitedBy      User             @relation("InvitedBy", fields: [invitedById], references: [id], onDelete: Cascade)
+  expiresAt      DateTime
+  createdAt      DateTime         @default(now())
+
+  @@index([organizationId, email])
+  @@map("organization_invitations")
+}
+
+model AuditLog {
+  id             String   @id @default(uuid()) @db.Uuid
+  organizationId String   @db.Uuid
+  userId         String?  @db.Uuid
+  user           User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action         String
+  resource       String
+  ipAddress      String?
+  metadata       Json?
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@map("audit_logs")
+}
+
+model Workspace {
+  id             String      @id @default(uuid()) @db.Uuid
+  organizationId String      @db.Uuid
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  description    String?
+  createdBy      String?     @db.Uuid
+  createdAt      DateTime    @default(now())
+  members        WorkspaceMembership[]
+  dashboards     Dashboard[]
+
+  @@index([organizationId])
+  @@map("workspaces")
+}
+
+model WorkspaceMembership {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @db.Uuid
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  userId      String    @db.Uuid
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        UserRole  @default(DEVELOPER)
+  grantedAt   DateTime  @default(now())
+
+  @@unique([workspaceId, userId])
+  @@map("workspace_memberships")
+}
+
+model Dashboard {
+  id                    String            @id @default(uuid()) @db.Uuid
+  workspaceId           String            @db.Uuid
+  workspace             Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  name                  String
+  description           String?
+  pbixFingerprintSha256 String            @db.Char(64)
+  status                String            @default("DRAFT")
+  currentVersionNumber  String            @default("1.0.0")
+  createdBy             String?           @db.Uuid
+  creator               User?             @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  versions              DashboardVersion[]
+  healthReports         HealthReport[]
+  sharedLinks           SharedLink[]
+
+  @@index([workspaceId])
+  @@map("dashboards")
+}
+
+model DashboardVersion {
+  id               String      @id @default(uuid()) @db.Uuid
+  dashboardId      String      @db.Uuid
+  dashboard        Dashboard   @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+  versionNumber    String
+  commitMessage    String
+  mongoLayoutAstId String
+  createdBy        String?     @db.Uuid
+  creator          User?       @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  createdAt        DateTime    @default(now())
+  capsules         Capsule[]
+
+  @@index([dashboardId])
+  @@map("dashboard_versions")
+}
+
+model Capsule {
+  id              String           @id @default(uuid()) @db.Uuid
+  versionId       String           @db.Uuid
+  version         DashboardVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  s3Bucket        String
+  s3Key           String
+  fileSizeBytes   BigInt
+  sha256Hash      String           @db.Char(64)
+  ecdsaSignature  String
+  kmsKeyArn       String
+  generatedAt     DateTime         @default(now())
+  sharedLinks     SharedLink[]
+
+  @@index([versionId])
+  @@map("capsules")
+}
+
+model SharedLink {
+  id                   String    @id @default(uuid()) @db.Uuid
+  dashboardId          String    @db.Uuid
+  dashboard            Dashboard @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+  capsuleId            String    @db.Uuid
+  capsule              Capsule   @relation(fields: [capsuleId], references: [id], onDelete: Cascade)
+  shareToken           String    @unique
+  passcodeHash         String?
+  isPasscodeProtected  Boolean   @default(false)
+  allowedDomains       Json?     @default("[]")
+  watermarkText        String?
+  allowExport          Boolean   @default(false)
+  expiresAt            DateTime?
+  createdBy            String?   @db.Uuid
+  creator              User?     @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  createdAt            DateTime  @default(now())
+
+  @@index([shareToken])
+  @@map("shared_links")
+}
+
+model HealthReport {
+  id                 String    @id @default(uuid()) @db.Uuid
+  dashboardId        String    @db.Uuid
+  dashboard          Dashboard @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
+  overallScore       Int
+  performanceScore   Int
+  securityScore      Int
+  designScore        Int
+  accessibilityScore Int
+  findingsJson       Json
+  evaluatedAt        DateTime  @default(now())
+
+  @@index([dashboardId])
+  @@map("health_reports")
+}
