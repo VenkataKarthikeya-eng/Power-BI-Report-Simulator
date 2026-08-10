@@ -13,6 +13,14 @@ const server = http.createServer((req, res) => {
   res.end();
 });
 
+server.on('error', (err: any) => {
+  if (err.code === 'EADDRINUSE') {
+    console.warn(`🔔 Port ${port} already in use. Notification Service running on existing instance.`);
+  } else {
+    console.error(err);
+  }
+});
+
 server.listen(port, () => {
   console.log(`🔔 Dashboard Capsule AI — Notification Service listening on port ${port}...`);
 });

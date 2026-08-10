@@ -13,9 +13,9 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "clean": "turbo run clean && rm -rf node_modules",
-    "db:migrate": "npm --prefix packages/database run db:migrate",
-    "db:seed": "npm --prefix packages/database run db:seed",
+    "clean": "turbo run clean",
+    "db:migrate": "npm run db:migrate --workspace=@dcaps/database",
+    "db:seed": "npm run db:seed --workspace=@dcaps/database",
     "prepare": "husky install"
   },
   "devDependencies": {
@@ -26,6 +26,12 @@
     "prettier": "^3.2.0",
     "turbo": "^1.12.0",
     "typescript": "^5.4.0"
+  },
+  "optionalDependencies": {
+    "@next/swc-win32-x64-msvc": "14.2.33"
+  },
+  "dependencies": {
+    "next": "14.2.35"
   },
   "engines": {
     "node": ">=18.0.0"
