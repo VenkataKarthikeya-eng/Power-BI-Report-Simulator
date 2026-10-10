@@ -1,17 +1,18 @@
-name: Dashboard Capsule AI — CI Monorepo Pipeline
+name: Power BI Report Simulator — CI Pipeline
 
 on:
   push:
-    branches: [ main, staging ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
 jobs:
-  lint-and-typecheck:
-    name: Lint & Typecheck
+  test-and-build:
+    name: Test & Build Standalone Simulator
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -19,26 +20,11 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - name: Install Monorepo Dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Typecheck Monorepo Packages & Apps
-        run: npm run lint
+      - name: Run Test Suite
+        run: npm run test:all
 
-  build-apps:
-    name: Build Next.js Frontends
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Install Monorepo Dependencies
-        run: npm ci
-
-      - name: Build Next.js Frontends via Turborepo
+      - name: Run Production Build
         run: npm run build

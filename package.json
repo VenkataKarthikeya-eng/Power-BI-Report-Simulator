@@ -1,37 +1,40 @@
 {
-  "name": "dashboard-capsule-ai-monorepo",
-  "version": "1.0.0",
+  "name": "power-bi-report-simulator",
+  "version": "0.1.0",
   "private": true,
-  "description": "Dashboard Capsule AI — Enterprise Monorepo Platform",
-  "workspaces": [
-    "apps/*",
-    "packages/*",
-    "services/notification-service"
-  ],
+  "description": "Upload Power BI reports, explore dashboard layouts, and interact with simulated analytics.",
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "test": "turbo run test",
-    "clean": "turbo run clean",
-    "db:migrate": "npm run db:migrate --workspace=@dcaps/database",
-    "db:seed": "npm run db:seed --workspace=@dcaps/database",
-    "prepare": "husky install"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "tsx scripts/run_parser_tests.ts",
+    "test:simulation": "tsx scripts/run_simulation_tests.ts",
+    "test:share": "tsx scripts/run_share_tests.ts",
+    "test:all": "tsx scripts/run_parser_tests.ts && tsx scripts/run_simulation_tests.ts && tsx scripts/run_share_tests.ts"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.49.1",
+    "jszip": "^3.10.2",
+    "lucide-react": "^0.447.0",
+    "next": "14.2.35",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.0.0",
-    "@commitlint/config-conventional": "^19.0.0",
-    "husky": "^9.0.0",
-    "lint-staged": "^15.2.0",
-    "prettier": "^3.2.0",
-    "turbo": "^1.12.0",
+    "@types/jszip": "^3.4.0",
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "tsx": "^4.23.15",
     "typescript": "^5.4.0"
   },
   "optionalDependencies": {
     "@next/swc-win32-x64-msvc": "14.2.33"
-  },
-  "dependencies": {
-    "next": "14.2.35"
   },
   "engines": {
     "node": ">=18.0.0"

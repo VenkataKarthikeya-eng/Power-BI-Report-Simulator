@@ -1,22 +1,35 @@
-# Dashboard Capsule AI — Enterprise Autonomous BI Platform
+# Power BI Report Simulator
 
-[![Version](https://img.shields.io/badge/Version-2.0.0--Certified-emerald.svg)](./docs/RELEASE_NOTES_V2.0.md)
+[![Version](https://img.shields.io/badge/Version-1.0.0--Ready-emerald.svg)](./README.md)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
-[![Build Status](https://img.shields.io/badge/Turborepo-11%2F11%20Passing-brightgreen.svg)](#-production-deployment-checklist)
-[![Architecture](https://img.shields.io/badge/Architecture-Monorepo%20%2F%20Microservices-indigo.svg)](#-system-architecture)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)](#-quick-start)
+[![Aesthetics](https://img.shields.io/badge/UI-Clean%20%2F%20Tailwind%20Red-red.svg)](#-visual-design-system)
 
-**Dashboard Capsule AI** is a universal, portable, self-guided enterprise AI Business Intelligence platform. It parses Power BI (`.pbix`) and multi-BI reports into secure, standalone **Dashboard Capsules (`.dcaps`)** capable of running zero-latency analytics client-side via DuckDB WebAssembly—without requiring desktop hardware or per-user licensing fees.
+**Power BI Report Simulator** — Upload Power BI reports, explore dashboard layouts, and interact with simulated analytics.
+
+In this platform:
+- **Locked Visuals & Layout**: All charts, KPI cards, grids, axes, and formatting are strictly locked so recipients cannot accidentally displace, break, or alter the layout.
+- **Operable Slicers & Filters**: Viewers can freely interact with filters and slicers (Geographic regions, time periods, categories, and What-If scenario sliders) to dynamically slice and recalculate data in real-time.
+- **Form-Style Shareable Links**: Generate public or passcode-protected links (just like Google Forms or Typeform links) that open instantaneously.
+- **Decoupled Simulation Model**: The dashboard captures the report as a client-side simulation preset. Heavy source datasets and slow database queries are completely decoupled—allowing recipients to explore and slice metrics with **zero loading lag** and **zero per-user licensing fees**.
+
+> 📖 **Full Technical Guide**: For an exhaustive bit-to-bit technical breakdown, mathematical formulas, AST schemas, and end-to-end operational lifecycle, see [COMPLETE_PROJECT_DOCUMENTATION.md](./COMPLETE_PROJECT_DOCUMENTATION.md).
 
 ---
 
-## 📌 Portfolio Highlights
+## 📌 Requirements to Download (100% Free)
 
-- 🚀 **Self-Guided Platform Architecture**: 4-Step Onboarding Wizard, Product Tour Tooltips, Permanent Journey Stepper, and Floating AI Assistant Guide.
-- ⚡ **Zero-Latency WASM Runtime**: Sub-50ms query execution powered by DuckDB WebAssembly running directly inside the client browser.
-- 🤖 **Multi-Agent AI Swarm**: 10 specialized AI agents (DAX Specialist, Security Auditor, UX Designer, Data Modeler) collaborating via shared memory.
-- 🔒 **Envelope Encryption & Signatures**: AWS KMS envelope encryption (AES-256-GCM) and hardware-backed ECDSA P-384 digital signatures.
-- 🔮 **Digital Twin Simulation Engine**: Stochastic 1,000-run Monte Carlo projections for What-If scenario planning.
-- 📈 **Real-Time Columnar Telemetry**: Interactive ClickHouse analytics monitoring viewer heatmaps and query latencies.
+This is a portfolio-ready, self-contained project requiring **only free, open-source tools**:
+
+| Requirement | Version | Cost | Download Link | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| **Node.js** | v18.0.0 or higher | **Free** | [nodejs.org](https://nodejs.org/) | LTS recommended |
+| **npm** | v9.0.0 or higher | **Free** | Bundled with Node.js | Package manager |
+| **Modern Browser** | Chrome, Edge, Firefox, Safari | **Free** | Built-in | Web browser |
+
+> [!NOTE]
+> **Zero Paid Cloud Services Required**:
+> You do **not** need an Azure Power BI Embedded capacity subscription (which costs \$735+/month), AWS KMS, or heavy local database containers (PostgreSQL, ClickHouse, Redis, MongoDB). The platform compiles self-contained simulation presets that run natively client-side via Next.js and Web APIs.
 
 ---
 
@@ -24,158 +37,95 @@
 
 ```mermaid
 graph TD
-    User([Browser Client / Executive View]) --> Gateway[Go API Gateway :8080]
+    User([Power BI Author]) -->|Uploads .pbix report| Parser[JSZip Report/Layout Parser]
     
-    subgraph Frontend Applications
-        LandingWeb[landing-web :3000]
-        AppDashboard[app-dashboard :3001]
-        AdminPortal[admin-portal :3002]
-        ViewerWasm[viewer WASM Canvas :3003]
+    subgraph Client-Side Compilation Engine
+        Parser -->|Decodes UTF-16LE AST| LayoutExtractor[Layout & Container Extractor]
+        LayoutExtractor -->|Extracts Pages & Charts| LockEngine[Layout Locking Guard]
+        LayoutExtractor -->|Extracts Slicers & Filters| SimCompiler[Simulation Preset Compiler]
+        LockEngine --> PresetBundle[Simulation Preset .dcaps]
+        SimCompiler --> PresetBundle
     end
-
-    subgraph Go & Python Microservices
-        Gateway --> AuthSvc[Go Auth Service :8081]
-        Gateway --> ImportEngine[Go PBIX Parser :8082]
-        Gateway --> CapsuleBuilder[Go Capsule Compiler :8083]
-        Gateway --> AnalyticsSvc[Go ClickHouse Telemetry :8084]
-        Gateway --> AiCore[Python FastAPI Swarm :8000]
+    
+    subgraph Form-Style Share Distribution
+        PresetBundle --> ShareGenerator[Shareable Link Generator]
+        ShareGenerator -->|Generates URL| FormLink["/share/[capsule_id]"]
     end
-
-    subgraph Storage & Infrastructure
-        AuthSvc --> PostgreSQL[(PostgreSQL 16)]
-        ImportEngine --> MongoDB[(MongoDB 7.0)]
-        CapsuleBuilder --> S3[(AWS S3 Storage)]
-        AnalyticsSvc --> ClickHouse[(ClickHouse OLAP)]
-        AiCore --> Qdrant[(Qdrant Vector DB)]
-        AiCore --> Redis[(Redis 7.2 Cache)]
+    
+    subgraph Recipient Experience
+        FormLink -->|Opens in browser| RecipientView[Distraction-Free Locked Viewer]
+        RecipientView -->|Layout & Charts| LockedState["🔒 Locked & Tamper-Proof"]
+        RecipientView -->|Slicers & What-If| DynamicSlice["⚡ Operable Dynamic Recalculation"]
     end
 ```
 
 ---
 
-## 🌟 Visual Feature Walkthrough
+## 🌟 Key Features
 
-### 1. Self-Guided First-Time Onboarding & Journey Stepper
-```
-+---------------------------------------------------------------------------------------------------+
-|  🧭 Your Analytics Journey:  ✓ Workspace Created → ✓ Report Uploaded → ○ AI Analysis → ○ Share    |
-+---------------------------------------------------------------------------------------------------+
-|  Welcome to Dashboard Capsule AI                                                                   |
-|  "Transform your BI reports into AI-powered insights in minutes."                                 |
-|                                                                                                   |
-|  [Step 1: Workspace]    [Step 2: Import PBIX]    [Step 3: AI Intelligence]   [Step 4: Share Link]  |
-+---------------------------------------------------------------------------------------------------+
-```
+### 1. Universal PBIX Archive Ingestion
+- Ingests real Power BI `.pbix` and `.pbit` containers in-browser using `jszip`.
+- Reads `Report/Layout` streams, auto-detecting UTF-16LE / UTF-8 JSON encoding.
+- Extracts visual containers (KPI Cards, Bar Charts, Column Charts, Line Charts, Donut Charts, Matrices, and Slicers).
+- Built-in 1-click curated templates: **Global Supply Chain & Logistics**, **Executive SaaS Financials & ARR**, and **Omnichannel Retail Sales**.
 
-### 2. Executive BI Workspace & Dynamic Recommendations
-```
-+---------------------------------------------------------------------------------------------------+
-| Executive BI Workspace                              [ 🤖 Ask AI Copilot ]  [ + Import PBIX Report ]|
-+---------------------------------------------------------------------------------------------------+
-| ⚡ Recommended Action: Run AI Health Analysis                                                      |
-| Detect DAX performance bottlenecks, PII risks, and WCAG accessibility improvements.               |
-+---------------------------------------------------------------------------------------------------+
-|  Total Capsules      Active Share Tokens      Avg Health Score        WASM Render Speed       |
-|       128                    45                   94 / 100                 18 ms              |
-+---------------------------------------------------------------------------------------------------+
-```
+### 2. Locked Charts & Tamper-Proof Layout
+- Visual charts and cards are locked against accidental layout shifts, coordinate tampering, or unauthorized restructuring.
+- Subtle lock badges (`🔒 LOCKED`) reassure viewers of certified visual integrity.
 
-### 3. AI Health Index & 1-Click Auto-Fix Engine
-```
-+---------------------------------------------------------------------------------------------------+
-| 🩺 Health Score: 94/100                                                [ ✨ Run 1-Click Auto-Fix ] |
-| Prioritized Roadmap:                                                                               |
-| - P1 Security: Apply RLS Filtering to DriverSSN Column                                            |
-| - P2 DAX: Refactor FILTER(ALL()) -> KEEPFILTERS in Delayed Shipments (+65% render speed)          |
-| - P3 Accessibility: Adjust Subtitle Contrast Ratio for WCAG 2.2 AA Compliance                    |
-+---------------------------------------------------------------------------------------------------+
-```
+### 3. Fully Operable Slicers & What-If Simulation
+- Geographic region pills, reporting timeframe dropdowns, and operational category toggles remain 100% interactive.
+- **What-If Scenario Sliders**: Viewers can drag sliders (e.g. +15% margin or -10% delay) to simulate strategic business scenarios on the fly with instantaneous visual animation.
+- Cross-filtering: Clicking an item highlights associated metrics across the dashboard.
+
+### 4. Form-Style Shareable Links (Like Google Forms)
+- Instant 1-click link creation (`/share/[capsule_id]`).
+- Clean, distraction-free view with zero login barrier for public links.
+- QR code generation, 1-click link copying with confetti haptics, and fullscreen presentation mode.
 
 ---
 
-## 💻 Tech Stack & Monorepo Structure
+## 🎨 Visual Design System (Linear + Dub.co + Raycast)
 
-| Layer | Technology Stack |
-| :--- | :--- |
-| **Monorepo Architecture** | Turborepo, npm workspaces, TypeScript 5.4 |
-| **Frontend Applications** | Next.js 14 (App Router), React 18, Tailwind CSS, DuckDB WASM |
-| **Microservices Backend** | Go (Gin/Chi), Python 3.11 (FastAPI, PyTorch, LangChain) |
-| **Databases & Vector DB** | PostgreSQL 16, MongoDB 7.0, Redis 7.2, Qdrant Vector DB, ClickHouse |
-| **DevOps & Cloud** | Docker, Docker Compose, Kubernetes, Terraform |
-
-```
-dashboard-capsule-ai/
-├── apps/
-│   ├── app-dashboard/      # Core Self-Guided Enterprise Dashboard Platform (Port 3001)
-│   ├── landing-web/        # Public Marketing Portal (Port 3000)
-│   ├── admin-portal/       # Enterprise Administration Control Center (Port 3002)
-│   └── viewer/             # Standalone Client-Side WASM Canvas Viewer (Port 3003)
-├── packages/
-│   ├── ui/                 # Design System Component Library (@dcaps/ui)
-│   ├── sdk/                # Universal BI Adapters (@dcaps/sdk)
-│   └── types/              # Shared TypeScript Schemas (@dcaps/types)
-└── services/
-    ├── api-gateway/        # Go Reverse Proxy Gateway (Port 8080)
-    ├── ai-core/            # Python FastAPI Multi-Agent Swarm (Port 8000)
-    └── import-engine/      # Go PBIX/AST Parser (Port 8082)
-```
+The interface is engineered with modern SaaS dark glassmorphism:
+- **Obsidian Dark Canvas**: `#07090e` base canvas with subtle ambient lighting.
+- **Frosted Glass Panels**: Semi-transparent slate containers (`backdrop-blur-xl bg-slate-900/70 border border-slate-800/80`).
+- **Radiant Accents**: Linear Indigo (`#6366f1`), Electric Cyan (`#06b6d4`), and Neon Emerald (`#10b981`).
+- **Motion Capture Particle Canvas**: Interactive floating network nodes and micro-grid canvas background.
+- **Animated SVG Curves & Charts**: Smooth bezier curves, responsive bar fills, and glowing sparkline dots.
 
 ---
 
-## 🛠 Quick Start & Local Setup
+## 🚀 Quick Start
 
-### Prerequisites
-- **Node.js**: v18.0.0 or higher
-- **npm**: v9.0.0 or higher
-- **Go**: v1.21 or higher *(optional for backend services)*
-- **Python**: v3.11 or higher *(optional for AI core service)*
-
-### 1-Command Local Startup
-
+### 1. Clone & Install
 ```bash
 # Clone the repository
 git clone https://github.com/VenkataKarthikeya-eng/dashboard-capsule-ai.git
 cd dashboard-capsule-ai
 
-# Install monorepo dependencies
+# Install dependencies (free Node.js/npm)
 npm install
+```
 
-# Build shared packages and execute Next.js apps
+### 2. Run Local Development Server
+```bash
 npm run dev
 ```
 
-Open your browser at **`http://localhost:3001`** to launch the self-guided workspace. Click **"✨ Explore Demo Workspace"** in the top banner for instant demo data exploration.
+- **Dashboard Studio & PBIX Uploader**: [http://localhost:3001](http://localhost:3001)
+- **Direct Public Share Link**: [http://localhost:3001/share/Global_Supply_Chain_Logistics](http://localhost:3001/share/Global_Supply_Chain_Logistics)
 
----
-
-## 🐳 Docker Deployment
-
-To run the complete containerized stack using Docker Compose:
-
+### 3. Verify Build & Architecture
 ```bash
-# Start all containerized microservices & frontend apps
-docker-compose up --build -d
+# Verify monorepo production build
+npm run build
 
-# Verify service health
-docker-compose ps
+# Run simulation & slice calculation verification
+npx tsx scripts/verify_simulation.ts
 ```
 
 ---
 
-## 📋 Production Deployment Checklist
-
-Before releasing to production environments, verify the following deployment controls:
-
-- [x] **Monorepo Build**: `npm run build` passes with zero TypeScript and zero Next.js compilation errors.
-- [x] **Security & Cryptography**: AWS KMS envelope key rotation enabled; ECDSA P-384 hardware signing keys verified.
-- [x] **WASM Performance**: DuckDB WASM static assets served via CDN with Brotli compression.
-- [x] **Database Migrations**: PostgreSQL & ClickHouse schema migrations executed cleanly.
-- [x] **Environment Security**: Zero hardcoded credentials or API keys present in repository source.
-- [x] **Self-Guided UX**: First-time user onboarding wizard, product tour tooltips, and smart empty states active.
-
----
-
-## 📜 Contribution & License
-
-- **License**: Released under the [Apache 2.0 License](./LICENSE).
-- **Contribution Standards**: See [CONTRIBUTING.md](./CONTRIBUTING.md) for branch strategy, conventional commits, and PR standards.
+## 📜 License
+Released under the [Apache 2.0 License](./LICENSE).

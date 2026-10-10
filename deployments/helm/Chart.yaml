@@ -1,9 +1,0 @@
-apiVersion: v2
-name: dashboard-capsule-ai
-description: Enterprise Helm Chart for Dashboard Capsule AI Platform v1.0.0
-type: application
-version: 1.0.0
-appVersion: "1.0.0"
-maintainers:
-  - name: Platform Architecture Engineering Team
-    email: devops@dashboardcapsule.ai
